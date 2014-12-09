@@ -27,7 +27,7 @@ def main():
     parser.add_argument('--output-directory', '-o', required=True, help='Directory to store the PDFs of the downloaded newspaper issues.')
     parser.add_argument('--kundennummer', '-k', required=True, help='Kundennummer (customer number) for your e-paper subscription.')
     parser.add_argument('--plz', '-p', required=True, help='Postleitzahl (ZIP code) for your e-paper subscription.')
-    parser.add_argument('--cookie-file', '-c', help='Password for user given by --username.')
+    parser.add_argument('--cookie-file', '-c', help='File to store the cookies in.', default='~/.FAZ-paperboy_cookies.txt')
     parser.add_argument('--debug', '-d', action='store_true', help='Increase verbosity.')
     parser.add_argument('--pdf',  action='store_true', help='Download in PDF format.')
     parser.add_argument('--epub', action='store_true', help='Download in ePub format.')
@@ -42,7 +42,7 @@ def main():
     logging.basicConfig(level=level, format='%(levelname)-8s %(message)s')
     logging.getLogger("requests").setLevel(logging.WARNING)
 
-    browser = Browser(args.user_agent, args.cookie_file)
+    browser = Browser(args.user_agent, os.path.expanduser(args.cookie_file))
 
     random_sleep()
     index_page = browser.get('http://www.tagesspiegel.de/')
@@ -105,9 +105,9 @@ def main():
     browser.close()
 
 class Browser(object):
-    def __init__(self, user_agent, cookie_file):
+    def __init__(self, user_agent, cookie_file, store_any_cookie=False):
         self.s = requests.Session()
-        self.store_any_cookie = True # so also ones to 'discard' usually
+        self.store_any_cookie = store_any_cookie
         self.cookie_file = cookie_file
         if cookie_file:
             self.s.cookies = http.cookiejar.LWPCookieJar()
@@ -115,7 +115,6 @@ class Browser(object):
                 self.s.cookies.load(cookie_file, ignore_discard=self.store_any_cookie)
             except FileNotFoundError:
                 pass
-            #self.s.cookies.load(cookie_file)
         headers = {
           'User-Agent': user_agent,
           'Dnt': '1',
@@ -130,7 +129,6 @@ class Browser(object):
         logging.debug("saving cookies")
         try:
             self.s.cookies.save(self.cookie_file, ignore_discard=self.store_any_cookie)
-            #self.s.cookies.save(self.cookie_file)
         except:
             pass
 
