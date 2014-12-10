@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 Tagesspiegel-paperboy delivers your Tagesspiegel newspaper freshly every day.
