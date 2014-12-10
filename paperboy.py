@@ -135,7 +135,7 @@ class Browser(object):
     def set_referer(self, func, *args, **kwargs):
         if 'referer' in kwargs:
             headers = { 'Referer': kwargs['referer'] }
-            if headers in kwargs:
+            if 'headers' in kwargs:
                 kwargs['headers'].update(headers)
             else:
                 kwargs['headers'] = headers
