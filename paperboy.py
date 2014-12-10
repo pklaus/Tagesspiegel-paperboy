@@ -76,7 +76,7 @@ def main():
     if args.mobi: URLs.append('http://epaper.tagesspiegel.de/epaper/moausgaben.php')
 
     # Content-Disposition: attachment; filename="TSP-20141207.pdf"
-    cd_re = re.compile('filename="(.*)"')
+    cd_re = re.compile('filename="(.*)"') # Content-Disposition regex
     for url in URLs:
         random_sleep()
         issues_page = browser.get(url)
@@ -88,7 +88,7 @@ def main():
             issue_response = browser.get(issue_url, stream=True)
             try:
                 filename = cd_re.search(issue_response.headers['Content-Disposition']).group(1)
-            except IndexError:
+            except (IndexError, AttributeError, KeyError):
                 logging.warning('Something wrong with this issue: {} ?'.format(issue_url))
                 issue_response.close()
                 continue
@@ -163,6 +163,7 @@ def random_sleep(min_sec=0.6, max_sec=5.3):
     st = random.uniform(min_sec, max_sec)
     logging.debug('Sleep time: {}'.format(st))
     time.sleep(st)
+
 
 if __name__ == "__main__":
     main()
