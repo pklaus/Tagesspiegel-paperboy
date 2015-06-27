@@ -61,7 +61,7 @@ def main():
     login_answer = browser.post('http://abo.tagesspiegel.de/aboangebote/e-paper', data=login_data)
     random_sleep()
 
-    if not BeautifulSoup(login_answer.text).find('a', text='Logout'):
+    if not BeautifulSoup(login_answer.text).find('a', href='econtent.php?log=out'):
         logging.error('Incorrect credentials?')
         sys.exit(1)
 
@@ -71,9 +71,9 @@ def main():
 
     # Download all newspaper issues:
     URLs = []
-    if args.pdf:  URLs.append('http://epaper.tagesspiegel.de/epaper/ausgaben.php')
-    if args.epub: URLs.append('http://epaper.tagesspiegel.de/epaper/epausgaben.php')
-    if args.mobi: URLs.append('http://epaper.tagesspiegel.de/epaper/moausgaben.php')
+    if args.pdf:  URLs.append('http://epaper.tagesspiegel.de/epaper/econtent.php?archiv=pdf')
+    if args.epub: URLs.append('http://epaper.tagesspiegel.de/epaper/econtent.php?archiv=epub')
+    if args.mobi: URLs.append('http://epaper.tagesspiegel.de/epaper/econtent.php?archiv=mobi')
 
     # Content-Disposition: attachment; filename="TSP-20141207.pdf"
     cd_re = re.compile('filename="(.*)"') # Content-Disposition regex
